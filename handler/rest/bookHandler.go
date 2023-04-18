@@ -1,4 +1,4 @@
-package handler
+package rest
 
 import (
 	"fmt"
@@ -18,8 +18,8 @@ func NewBookHandler(bookService service.BookService) *bookHandler {
 	return &bookHandler{bookService}
 }
 
-func (h *bookHandler) GetBookHandler(c *gin.Context) {
-	book, err := h.bookService.GetBook()
+func (h *rest) GetBookHandler(c *gin.Context) {
+	book, err := h.service.Book.GetBook()
 	if err != nil {
 		c.JSON(500, gin.H{
 			"status":  "error",
@@ -35,13 +35,13 @@ func (h *bookHandler) GetBookHandler(c *gin.Context) {
 	})
 }
 
-func (h *bookHandler) ShowBookHandler(c *gin.Context) {
+func (h *rest) ShowBookHandler(c *gin.Context) {
 	ID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	book, err := h.bookService.ShowBook(uint(ID))
+	book, err := h.service.Book.ShowBook(uint(ID))
 	if err != nil {
 		c.JSON(404, gin.H{
 			"status":  "error",
@@ -57,7 +57,7 @@ func (h *bookHandler) ShowBookHandler(c *gin.Context) {
 	})
 }
 
-func (h *bookHandler) StoreBookHandler(c *gin.Context) {
+func (h *rest) StoreBookHandler(c *gin.Context) {
 	var book entity.BookInput
 
 	err := c.ShouldBindJSON(&book)
@@ -69,7 +69,7 @@ func (h *bookHandler) StoreBookHandler(c *gin.Context) {
 		return
 	}
 
-	b, err := h.bookService.StoreBook(book)
+	b, err := h.service.Book.StoreBook(book)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"status":  "error",
@@ -85,7 +85,7 @@ func (h *bookHandler) StoreBookHandler(c *gin.Context) {
 	})
 }
 
-func (h *bookHandler) UpdateBookHandler(c *gin.Context) {
+func (h *rest) UpdateBookHandler(c *gin.Context) {
 	var bookInput entity.BookInput
 
 	err := c.ShouldBindJSON(&bookInput)
@@ -102,7 +102,7 @@ func (h *bookHandler) UpdateBookHandler(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	b, err := h.bookService.UpdateBook(uint(ID), bookInput)
+	b, err := h.service.Book.UpdateBook(uint(ID), bookInput)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"status":  "error",
@@ -118,13 +118,13 @@ func (h *bookHandler) UpdateBookHandler(c *gin.Context) {
 	})
 }
 
-func (h *bookHandler) DeleteBookHandler(c *gin.Context) {
+func (h *rest) DeleteBookHandler(c *gin.Context) {
 	ID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = h.bookService.ShowBook(uint(ID))
+	_, err = h.service.Book.ShowBook(uint(ID))
 	if err != nil {
 		c.JSON(404, gin.H{
 			"status":  "error",
@@ -133,7 +133,7 @@ func (h *bookHandler) DeleteBookHandler(c *gin.Context) {
 		return
 	}
 
-	err = h.bookService.DeleteBook(uint(ID))
+	err = h.service.Book.DeleteBook(uint(ID))
 	if err != nil {
 		c.JSON(500, gin.H{
 			"status":  "error",
