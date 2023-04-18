@@ -2,12 +2,16 @@ package main
 
 import (
 	"pustaka-api/Database/sql"
+	"pustaka-api/Database/sql/seeder"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	sql.ConnectDatabase()
+	sql.Migrate()
+	seeder.Seed()
+	
 
 	// bookRepository := repository.NewBookRepository(db)
 	// bookService := service.NewBookService(bookRepository)
